@@ -28,6 +28,7 @@ RUN apt-get install wget -y
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb
 RUN dpkg -i dumb-init_*.deb
 
+# Install Composer
 RUN echo "memory_limit=-1" > "$PHP_INI_DIR/conf.d/memory-limit.ini"
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /composer
@@ -35,6 +36,12 @@ ENV COMPOSER_HOME /composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
+
+# Install Git
+RUN apt-get install git unzip -y
+
+ENV GIT_COMMITTER_NAME php-cli
+ENV GIT_COMMITTER_EMAIL php-cli@localhost
 
 # Cleanup
 RUN apt-get clean \
