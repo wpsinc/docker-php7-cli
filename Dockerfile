@@ -1,8 +1,8 @@
 # wpsinc/docker-php7-cli
 
-FROM php:7.0-cli
+FROM php:7.1-alpine
 
-RUN apt-get update
+RUN apk --no-cache add git
 
 RUN docker-php-ext-install \
     bcmath \
@@ -10,23 +10,32 @@ RUN docker-php-ext-install \
     pdo_mysql
 
 # Install GD library.
-RUN apt-get install -y \
-    libpng12-dev \
-    libjpeg-dev \
-    && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-    && docker-php-ext-install gd
+RUN apk add --no-cache \
+    freetype \
+    freetype-dev \
+    libjpeg-turbo \
+    libjpeg-turbo-dev \
+    libpng \
+    libpng-dev \
+    && docker-php-ext-configure gd \
+    --with-freetype-dir=/usr/include/ \
+    --with-jpeg-dir=/usr/include/ \
+    --with-png-dir=/usr/include/ \
+    && NPROC=$(getconf _NPROCESSORS_ONLN) \
+    && docker-php-ext-install -j${NPROC} gd \
+    && apk del --no-cache freetype-dev libjpeg-turbo-dev libpng-dev
 
 # Install `ImageMagick` (Linux app) and `imagick` PHP extension.
-RUN apt-get install -y \
-    imagemagick \
-    libmagickwand-dev \
-    && pecl install imagick \
-    && docker-php-ext-enable imagick
+RUN set -ex \
+    && apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
+    && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+    && pecl install imagick-3.4.3 \
+    && docker-php-ext-enable imagick \
+    && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
+    && apk del .phpize-deps
 
 # Install dumb-init
-RUN apt-get install wget -y
-RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb
-RUN dpkg -i dumb-init_*.deb
+RUN apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ add dumb-init
 
 # Install Composer
 RUN echo "memory_limit=-1" > "$PHP_INI_DIR/conf.d/memory-limit.ini"
@@ -37,16 +46,8 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
 
-# Install Git
-RUN apt-get install git unzip -y
-
 ENV GIT_COMMITTER_NAME php-cli
 ENV GIT_COMMITTER_EMAIL php-cli@localhost
-
-# Cleanup
-RUN apt-get clean \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Runs "/usr/bin/dumb-init -- /my/script --with --args"
 ENTRYPOINT ["/usr/bin/dumb-init", "--", "docker-php-entrypoint"]
