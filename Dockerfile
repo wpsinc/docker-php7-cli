@@ -2,7 +2,7 @@
 
 FROM php:7.1-alpine
 
-RUN apk --no-cache add git
+RUN apk add --no-cache git
 
 RUN docker-php-ext-install \
     bcmath \
@@ -34,10 +34,20 @@ RUN set -ex \
     && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
     && apk del .phpize-deps
 
-# Install dumb-init
-RUN apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ add dumb-init
+# Install Xdebug extension.
+RUN apk add --no-cache \
+    autoconf \
+    gcc \
+    g++ \
+    make \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
-# Install Composer
+# Install dumb-init.
+RUN apk add --no-cache \
+    dumb-init --repository http://dl-cdn.alpinelinux.org/alpine/v3.5/community/
+
+# Install Composer.
 RUN echo "memory_limit=-1" > "$PHP_INI_DIR/conf.d/memory-limit.ini"
 ENV COMPOSER_ALLOW_SUPERUSER 1
 ENV COMPOSER_HOME /composer
