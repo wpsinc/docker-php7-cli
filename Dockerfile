@@ -2,7 +2,7 @@
 
 FROM php:7.1-alpine
 
-RUN apk add --no-cache git
+RUN apk add --no-cache git sqlite
 
 RUN docker-php-ext-install \
     bcmath \
