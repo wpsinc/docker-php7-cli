@@ -7,7 +7,8 @@ RUN apk add --no-cache git
 RUN docker-php-ext-install \
     bcmath \
     mbstring \
-    pdo_mysql
+    pdo_mysql \
+    pdo_sqlite
 
 # Install GD library.
 RUN apk add --no-cache \
