@@ -4,13 +4,16 @@ FROM php:7.1-alpine
 
 RUN apk add --no-cache \
     git \
-    sqlite-dev
+    sqlite-dev \
+    zlib-dev
 
 RUN docker-php-ext-install \
     bcmath \
     mbstring \
     pdo_mysql \
     pdo_sqlite
+    pcntl \
+    zip
 
 # Install GD library.
 RUN apk add --no-cache \
