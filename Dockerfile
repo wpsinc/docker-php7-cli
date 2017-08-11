@@ -11,7 +11,7 @@ RUN docker-php-ext-install \
     bcmath \
     mbstring \
     pdo_mysql \
-    pdo_sqlite
+    pdo_sqlite \
     pcntl \
     zip
 
