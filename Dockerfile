@@ -4,6 +4,7 @@ FROM php:7.1-alpine
 
 RUN apk add --no-cache \
     git \
+    postgresql-dev \
     sqlite-dev \
     zlib-dev
 
