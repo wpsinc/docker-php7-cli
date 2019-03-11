@@ -13,6 +13,8 @@ RUN docker-php-ext-install \
     pdo_mysql \
     pdo_sqlite \
     pcntl \
+    pgsql \
+    pdo_pgsql \
     zip
 
 # Install GD library.
