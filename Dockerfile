@@ -16,7 +16,8 @@ RUN docker-php-ext-install \
     pcntl \
     pgsql \
     pdo_pgsql \
-    zip
+    zip \
+    mysqli
 
 # Install GD library.
 RUN apk add --no-cache \
@@ -64,6 +65,8 @@ ENV COMPOSER_HOME /composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
+
+RUN docker-php-ext-enable mysqli
 
 ENV GIT_COMMITTER_NAME php-cli
 ENV GIT_COMMITTER_EMAIL php-cli@localhost
