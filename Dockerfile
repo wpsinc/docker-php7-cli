@@ -16,7 +16,8 @@ RUN docker-php-ext-install \
     pcntl \
     pgsql \
     pdo_pgsql \
-    zip
+    zip \
+    mysqli
 
 # Install GD library.
 RUN apk add --no-cache \
