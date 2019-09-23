@@ -1,12 +1,14 @@
 # wpsinc/docker-php7-cli
 
-FROM php:7.1-alpine
+FROM php:7.2-alpine
 
 RUN apk add --no-cache \
     git \
     postgresql-dev \
     sqlite-dev \
-    zlib-dev
+    libzip-dev
+
+RUN docker-php-ext-configure zip --with-libzip
 
 RUN docker-php-ext-install \
     bcmath \
