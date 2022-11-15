@@ -1,6 +1,6 @@
 # wpsinc/docker-php7-cli
 
-FROM php:7.2-alpine
+FROM php:7.4-alpine
 
 RUN apk add --no-cache \
     git \
